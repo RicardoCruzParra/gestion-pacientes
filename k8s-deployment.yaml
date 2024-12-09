@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gestion-pacientes
+  labels:
+    app: gestion-pacientes
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gestion-pacientes
+  template:
+    metadata:
+      labels:
+        app: gestion-pacientes
+    spec:
+      containers:
+        - name: gestion-pacientes
+          image: gestion-pacientes:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:oracle:thin:@//oracle-service:1521/pruebaPacientes"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "SYSTEM"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "password123"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gestion-pacientes-service
+spec:
+  type: ClusterIP
+  selector:
+    app: gestion-pacientes
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
